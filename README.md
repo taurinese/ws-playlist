@@ -1,6 +1,6 @@
 # Playlist in PHP + Boostrap
 This playlist is developped only with PHP and Bootstrap.
-> Backoffice is accessible without any logging.
+* Backoffice is accessible without any logging. *
 
 # How it works
 This playlist contains labels, artists, albums and songs data.
