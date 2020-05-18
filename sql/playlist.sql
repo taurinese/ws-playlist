@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost:3306
--- Généré le :  lun. 02 mars 2020 à 17:00
+-- Hôte : 127.0.0.1:3306
+-- Généré le :  lun. 18 mai 2020 à 18:36
 -- Version du serveur :  5.7.26
--- Version de PHP :  7.3.8
+-- Version de PHP :  7.2.18
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -26,26 +28,24 @@ SET time_zone = "+00:00";
 -- Structure de la table `albums`
 --
 
-CREATE TABLE `albums` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `albums`;
+CREATE TABLE IF NOT EXISTS `albums` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `year` year(4) NOT NULL,
-  `artist_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `artist_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `albums_artist_id` (`artist_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `albums`
 --
 
 INSERT INTO `albums` (`id`, `name`, `year`, `artist_id`) VALUES
-(1, 'Lucky Jim', 1993, 6),
-(5, 'Fire of Love', 1981, 6),
-(8, 'The Doors', 1967, 15),
-(10, 'The Stooges', 1969, 3),
-(13, 'Funhouse', 1970, 3),
-(42, 'Brothers In Arms', 1985, 42),
-(49, 'Dire Straits', 1978, 42),
-(69, 'Doolittle', 1989, 54);
+(2, 'Gros carton tia vu', 2020, 3),
+(3, 'Classique de fou', 1987, 3),
+(8, 'Classique de fou furieux', 2023, 5);
 
 -- --------------------------------------------------------
 
@@ -53,23 +53,79 @@ INSERT INTO `albums` (`id`, `name`, `year`, `artist_id`) VALUES
 -- Structure de la table `artists`
 --
 
-CREATE TABLE `artists` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `artists`;
+CREATE TABLE IF NOT EXISTS `artists` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `biography` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `biography` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `artists`
 --
 
-INSERT INTO `artists` (`id`, `name`, `biography`) VALUES
-(3, 'The Stooges', 'Praesent aliquam, enim at fermentum mollis, ligula massa adipiscing nisl, ac euismod nibh nisl eu lectus.'),
-(6, 'The Gun Club', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi vel erat non mauris convallis vehicula. Nulla et sapien.'),
-(15, 'The Doors', 'Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.'),
-(33, 'Pink Floyd', 'Integer quis metus vitae elit lobortis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.'),
-(42, 'Dire Straits', 'Fusce vulputate sem at sapien. Vivamus leo. Aliquam libero eu enim. Nulla nec felis sed leo placerat imperdiet. Aenean suscipit nulla in justo.'),
-(54, 'Pixies', 'Praesent blandit odio eu enim.');
+INSERT INTO `artists` (`id`, `name`, `biography`, `image`) VALUES
+(3, 'Jul', 'Saint-Jean la Puenta', NULL),
+(5, 'Bob Sinclar', 'ohlala l\'enchainement', '5.jpg'),
+(10, 'Bobby', 'pourquoi pas', NULL),
+(36, 'test pour test', 'zezezez', NULL),
+(37, 'Maxibebou', 'Artiste de grande renommée tu connais ou pas', '37.jfif'),
+(45, 'ukikiki', 'kiukiukiu', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `artists_labels`
+--
+
+DROP TABLE IF EXISTS `artists_labels`;
+CREATE TABLE IF NOT EXISTS `artists_labels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `artist_id` int(11) NOT NULL,
+  `label_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `artists_labels_artist_id` (`artist_id`) USING BTREE,
+  KEY `artists_labels_label_id` (`label_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4;
+
+--
+-- Déchargement des données de la table `artists_labels`
+--
+
+INSERT INTO `artists_labels` (`id`, `artist_id`, `label_id`) VALUES
+(4, 3, 4),
+(5, 10, 4),
+(6, 5, 5),
+(11, 10, 5),
+(50, 36, 4),
+(51, 37, 6),
+(52, 37, 7),
+(62, 45, 6);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `labels`
+--
+
+DROP TABLE IF EXISTS `labels`;
+CREATE TABLE IF NOT EXISTS `labels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+
+--
+-- Déchargement des données de la table `labels`
+--
+
+INSERT INTO `labels` (`id`, `name`) VALUES
+(4, 'D\'Or et de Platine'),
+(5, 'Sony Music France'),
+(6, 'Meilleur label de France tu connais'),
+(7, 'Label trop fortiche');
 
 -- --------------------------------------------------------
 
@@ -77,50 +133,52 @@ INSERT INTO `artists` (`id`, `name`, `biography`) VALUES
 -- Structure de la table `songs`
 --
 
-CREATE TABLE `songs` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `songs`;
+CREATE TABLE IF NOT EXISTS `songs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `artist_id` int(11) NOT NULL,
-  `album_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `album_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `songs_artist_id` (`artist_id`),
+  KEY `songs_album_id` (`album_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `songs`
 --
 
 INSERT INTO `songs` (`id`, `title`, `artist_id`, `album_id`) VALUES
-(18, 'She\'s like Heroin to Me', 6, 5),
-(24, 'Hey', 54, 69),
-(25, 'No Fun', 3, 10),
-(38, 'Money For Nothing', 42, 42),
-(56, 'Break on Through (To the other side)', 15, 8),
-(63, 'Gouge Away', 54, 69),
-(76, 'Light My Fire', 15, 8),
-(98, 'Sex Beat', 6, 5),
-(122, 'Sultans of Swing', 42, 49),
-(344, 'I Wanna Be Your Dog', 3, 10);
+(1, 'C\'est rien c\'est la rue', 3, 2),
+(5, 'test song', 3, NULL),
+(8, 'Toi même t\'es au courant', 5, 3),
+(10, 'test', 3, 2),
+(11, 'Baby Shark', 37, NULL);
 
 --
--- Index pour les tables déchargées
+-- Contraintes pour les tables déchargées
 --
 
 --
--- Index pour la table `albums`
+-- Contraintes pour la table `albums`
 --
 ALTER TABLE `albums`
-  ADD PRIMARY KEY (`id`);
+  ADD CONSTRAINT `albums_artist_id` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Index pour la table `artists`
+-- Contraintes pour la table `artists_labels`
 --
-ALTER TABLE `artists`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `artists_labels`
+  ADD CONSTRAINT `artists_labels_artist_id` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `artists_labels_label_id` FOREIGN KEY (`label_id`) REFERENCES `labels` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Index pour la table `songs`
+-- Contraintes pour la table `songs`
 --
 ALTER TABLE `songs`
-  ADD PRIMARY KEY (`id`);
+  ADD CONSTRAINT `songs_album_id` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `songs_artist_id` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
